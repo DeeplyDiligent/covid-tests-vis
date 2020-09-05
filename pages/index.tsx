@@ -31,20 +31,22 @@ const Home = () => {
   const casespertest = vicData.map(x => ({y: x['Confirmed cases'] / x['Total tested'], t: moment(x["Date"]).toDate()}))
   const casespernewtest = getChange(vicData).map(x => ({y: x['casesChange']/x['testChange'], t: moment(x["Date"]).toDate()}))
   console.log(getChange(vicData))
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>COVID-19 Victoria Testing Analysis</title>
         <link rel="icon" href="/favicon.ico"/>
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
           Covid-19 By Testing - Data for Victoria
-        </h1>
-        <div style={{margin: "10px"}}>Hi, I'm Deep! I had a simple mission in creating this site: to learn a new tech
-          stack and to provide more data about the tests being done as a proportion of cases. This website should
-          automatically update as new data is released each day.
+        </h1><br/>
+        <div style={{margin: "10px"}}>Hi, I'm Deep! I had two simple missions when creating this site: <br /><br/>
+          1. To learn a new tech stack <br/>
+          2. To provide an accurate picture about the tests being done as a proportion of cases in victoria.<br /> <br/>
+          This website will automatically update as new data is released each day.
         </div>
         <h2 className={styles.subtitle}>
           Number of Covid-19 Tests
