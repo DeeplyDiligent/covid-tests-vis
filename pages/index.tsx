@@ -4,13 +4,33 @@ import useSWR from "swr";
 import fetcher from "../utils/fetcher";
 import {Line} from "react-chartjs-2";
 import moment from "moment";
+import {FaBeer, FaChevronRight} from "react-icons/fa";
+
+const getChange = (vicData) => {
+  const newVicData = []
+  for (var i = 1; i < vicData.length; i++) {
+    let currentData = vicData[i]
+    let pastData = vicData[i - 1]
+    newVicData.push({
+      casesChange: currentData["Confirmed cases"] - pastData["Confirmed cases"],
+      testChange: currentData["Total tested"] - pastData["Total tested"],
+      ...currentData
+    })
+  }
+  return newVicData
+}
 
 const Home = () => {
   const {data, error} = useSWR('/api/percentTests', fetcher)
   if (error || !data) return null;
-  const vicData = data.filter(x=> x["State/territory"] === "VIC")
-  const tests = vicData.map(x=>({y: x['Total tested'], t: moment(x["Date"]).toDate()}))
-  const cases = vicData.map(x=>({y: x['Confirmed cases'], t: moment(x["Date"]).toDate()}))
+  const vicData = data.filter(x => x["State/territory"] === "VIC")
+  vicData.reverse()
+
+  const tests = vicData.map(x => ({y: x['Total tested'], t: moment(x["Date"]).toDate()}))
+  const cases = vicData.map(x => ({y: x['Confirmed cases'], t: moment(x["Date"]).toDate()}))
+  const casespertest = vicData.map(x => ({y: x['Confirmed cases'] / x['Total tested'], t: moment(x["Date"]).toDate()}))
+  const casespernewtest = getChange(vicData).map(x => ({y: x['casesChange']/x['testChange'], t: moment(x["Date"]).toDate()}))
+  console.log(getChange(vicData))
   return (
     <div className={styles.container}>
       <Head>
@@ -20,15 +40,24 @@ const Home = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Covid-19 By Testing
+          Covid-19 By Testing - Data for Victoria
         </h1>
-        <div style={{width: "100%", height:"500px", marginTop:"50px"}}>
+        <div style={{margin: "10px"}}>Hi, I'm Deep! I had a simple mission in creating this site: to learn a new tech
+          stack and to provide more data about the tests being done as a proportion of cases. This website should
+          automatically update as new data is released each day.
+        </div>
+        <h2 className={styles.subtitle}>
+          Number of Covid-19 Tests
+        </h2>
+        <div style={{width: "100%", height: "500px"}}>
           <Line
-            options={{responsive: true, maintainAspectRatio: false, scales: {
-              xAxes: [{
-                type: 'time'
-              }]
-            }}}
+            options={{
+              responsive: true, maintainAspectRatio: false, scales: {
+                xAxes: [{
+                  type: 'time'
+                }]
+              }
+            }}
             data={{
               datasets: [
                 {
@@ -37,26 +66,105 @@ const Home = () => {
                   backgroundColor: 'rgba(162,255,181,0.2)',
                   borderColor: 'rgba(162,255,181,0.69)',
                   borderWidth: 1
-                },{
+                }]
+            }}/>
+        </div>
+        <h2 className={styles.subtitle}>
+          Number of Covid-19 Cases
+        </h2>
+        <div style={{width: "100%", height: "500px"}}>
+          <Line
+            options={{
+              responsive: true, maintainAspectRatio: false, scales: {
+                xAxes: [{
+                  type: 'time'
+                }]
+              }
+            }}
+            data={{
+              datasets: [
+                {
                   label: 'Confirmed Cases',
                   data: cases,
-                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                  borderColor: 'rgba(255,99,132,0.48)',
+                  backgroundColor: 'rgba(255,99,132,0.2)',
+                  borderColor: 'rgba(255,99,132,0.83)',
                   borderWidth: 1
                 }]
-          }}/>
+            }}/>
+        </div>
+        <h2 className={styles.subtitle}>
+          Proportion of Positive Cases in those Tested
+        </h2>
+        <div style={{width: "100%", height: "500px"}}>
+          <Line
+            options={{
+              responsive: true, maintainAspectRatio: false, scales: {
+                xAxes: [{
+                  type: 'time'
+                }],
+                yAxes: [{
+                  ticks: {
+                    callback: (value) => (value * 100).toFixed(2) + "%"
+                  },
+                  scaleLabel: {
+                    display: true,
+                    labelString: "Percentage"
+                  }
+                }]
+              }
+            }}
+            data={{
+              datasets: [
+                {
+                  label: '% of Cases out of Tests',
+                  data: casespertest,
+                  backgroundColor: 'rgba(101,110,255,0.2)',
+                  borderColor: 'rgba(101,110,255,0.69)',
+                  borderWidth: 1
+                }]
+            }}/>
+        </div>
+        <h2 className={styles.subtitle}>
+          Proportion of New Positive Cases Out of Daily Tests
+        </h2>
+        <div style={{width: "100%", height: "500px"}}>
+          <Line
+            options={{
+              responsive: true, maintainAspectRatio: false, scales: {
+                xAxes: [{
+                  type: 'time'
+                }],
+                yAxes: [{
+                  ticks: {
+                    callback: (value) => (value * 100).toFixed(2) + "%"
+                  },
+                  scaleLabel: {
+                    display: true,
+                    labelString: "Percentage"
+                  }
+                }]
+              }
+            }}
+            data={{
+              datasets: [
+                {
+                  label: '% of Cases out of Tests',
+                  data: casespernewtest,
+                  backgroundColor: 'rgba(255,69,247,0.2)',
+                  borderColor: 'rgba(255,69,247,0.69)',
+                  borderWidth: 1
+                }]
+            }}/>
         </div>
       </main>
 
       <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <div
+          style={{display:"flex"}}
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo}/>
-        </a>
+          See More By&nbsp;<a href={"https://deepb.co/"} style={{fontWeight: "bold"}}>DeeplyDiligent</a>&emsp;
+          <FaChevronRight/>
+        </div>
       </footer>
     </div>
   )
