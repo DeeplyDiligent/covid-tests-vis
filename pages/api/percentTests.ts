@@ -30,7 +30,7 @@ export default async (req: Request, res: Response) => {
       }))
       .on('data', (data) => results.push(data))
       .on('end', () => {
-          res.send(results).end()
+          res.send(results)
       });
   }));
 
