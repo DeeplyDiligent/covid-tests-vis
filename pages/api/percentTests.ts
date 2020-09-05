@@ -3,7 +3,7 @@
 import useSWR from "swr";
 import {Request, Response} from "express";
 import csv from 'csv-parser'
-import csvFetcher from "../utils/csvFetcher";
+import csvFetcher from "../../utils/csvFetcher";
 import * as fs from "fs";
 import http from 'http';
 import moment from "moment";
@@ -30,7 +30,7 @@ export default async (req: Request, res: Response) => {
       }))
       .on('data', (data) => results.push(data))
       .on('end', () => {
-          res.send(results)
+          res.send(results).end()
       });
   }));
 

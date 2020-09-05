@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import useSWR from "swr";
-import fetcher from "./utils/fetcher";
+import fetcher from "../utils/fetcher";
 import {Line} from "react-chartjs-2";
 import moment from "moment";
 
