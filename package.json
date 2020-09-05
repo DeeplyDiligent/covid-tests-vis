@@ -7,6 +7,9 @@
     "build": "next build",
     "start": "next start"
   },
+  "engines": {
+    "node": "10.x"
+  },
   "dependencies": {
     "@types/express": "^4.17.8",
     "chart.js": "^2.9.3",
